@@ -37,7 +37,7 @@ export function SidebarNav() {
     { label: 'State Members Report', href: '/api/reports/state-members/excel' },
     { label: 'At-Large Report', href: '/api/reports/atLarge/excel' },
     { label: 'Emeritus Report', href: '/api/reports/emeritus/excel' },
-    { label: 'All Members Report', href: '/api/reports/all/excel' }
+    { label: 'All Members Report', href: '/api/reports/all-members/excel' }
   ];
 
   const activeTab =
