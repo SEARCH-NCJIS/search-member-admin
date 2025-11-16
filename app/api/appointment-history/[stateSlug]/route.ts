@@ -4,14 +4,14 @@ import { NextResponse } from 'next/server';
 
 export async function GET(
   _req: Request,
-  { params }: { params: { stateSlug: string } }
+  { params }: { params: Promise<{ stateSlug: string }> }
 ) {
   // const session = await auth();
   // if (!session)
   //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const slug = await params.stateSlug;
-  const rawState = slug.replace(/-/g, ' ');
+  const { stateSlug } = await params;
+  const rawState = stateSlug.replace(/-/g, ' ');
   const normalized = rawState.trim().replace(/\s+/g, ' ');
 
   const client = await clientPromise;
