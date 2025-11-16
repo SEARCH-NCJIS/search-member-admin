@@ -1,3 +1,5 @@
+import ExcelJS from 'exceljs';
+
 import { Member } from '../types/member';
 import { AppointmentInfo } from '../types/appointmentInfo';
 import { Invoicing } from '../types/invoicing';
@@ -55,9 +57,9 @@ export const sheetColumns = [
 
 export const sheetRows = (
   m: Member,
-  appointment: AppointmentInfo,
-  invoicing: Invoicing,
-  admin: AdminInfo
+  appointment?: AppointmentInfo,
+  invoicing?: Invoicing,
+  admin?: AdminInfo
 ) => ({
   state: m.state ?? '',
   status: m.status ?? '',
@@ -82,20 +84,20 @@ export const sheetRows = (
   appointmentDate: m.appointmentDate ?? '',
   appointmentNotes: m.notes ?? '',
 
-  invoiceName: invoicing.invoiceContactName ?? '',
-  invoiceAddress: invoicing.invoiceAddress ?? '',
-  invoiceCity: invoicing.invoiceCity ?? '',
-  invoiceState: invoicing.invoiceState ?? '',
-  invoiceZip: invoicing.invoiceZip ?? '',
-  invoicePhone: invoicing.invoicePhone ?? '',
-  invoiceEmail: invoicing.invoiceEmail ?? '',
-  invoiceNotes: invoicing.invoiceNotes ?? '',
+  invoiceName: invoicing?.invoiceContactName ?? '',
+  invoiceAddress: invoicing?.invoiceAddress ?? '',
+  invoiceCity: invoicing?.invoiceCity ?? '',
+  invoiceState: invoicing?.invoiceState ?? '',
+  invoiceZip: invoicing?.invoiceZip ?? '',
+  invoicePhone: invoicing?.invoicePhone ?? '',
+  invoiceEmail: invoicing?.invoiceEmail ?? '',
+  invoiceNotes: invoicing?.invoiceNotes ?? '',
 
-  portalAccessGranted: admin.portalAccess ? 'Yes' : '',
-  welcomeLetterSent: admin.welcomeLetterSent ? 'Yes' : '',
-  headshotOnFile: admin.headshotOnFile ? 'Yes' : '',
-  meetingsByYear: admin.meetingsAttendedByYear
-    ? Object.entries(admin.meetingsAttendedByYear)
+  portalAccessGranted: admin?.portalAccess ? 'Yes' : '',
+  welcomeLetterSent: admin?.welcomeLetterSent ? 'Yes' : '',
+  headshotOnFile: admin?.headshotOnFile ? 'Yes' : '',
+  meetingsByYear: admin?.meetingsAttendedByYear
+    ? Object.entries(admin?.meetingsAttendedByYear)
         .map(([year, count]) => `${year}:${count}`)
         .join(', ')
     : ''
@@ -181,3 +183,84 @@ export function freezePanes(sheet: any) {
     }
   ];
 }
+
+export const removeEmptyColumns = (worksheet: ExcelJS.Worksheet) => {
+  const columnsToRemove: number[] = [];
+
+  worksheet.columns.forEach((col, index) => {
+    const columnNumber = index + 1;
+
+    let hasData = false;
+
+    for (let row = 2; row <= worksheet.rowCount; row++) {
+      const cell = worksheet.getRow(row).getCell(columnNumber).value;
+
+      if (cell !== null && cell !== undefined && cell !== '' && cell !== ' ') {
+        hasData = true;
+        break;
+      }
+    }
+
+    if (!hasData) {
+      columnsToRemove.push(columnNumber);
+    }
+  });
+
+  columnsToRemove
+    .sort((a, b) => b - a)
+    .forEach(colNumber => worksheet.spliceColumns(colNumber, 1));
+};
+
+export const shadeHeaderRowForFirstFiveOccupiedColumns = (
+  worksheet: ExcelJS.Worksheet
+) => {
+  const occupiedColumns: number[] = [];
+
+  worksheet.columns.forEach((_col, index) => {
+    const colNumber = index + 1;
+    let hasData = false;
+
+    for (let row = 2; row <= worksheet.rowCount; row++) {
+      const cellValue = worksheet.getRow(row).getCell(colNumber).value;
+
+      if (
+        cellValue !== null &&
+        cellValue !== undefined &&
+        cellValue !== '' &&
+        cellValue !== ' '
+      ) {
+        hasData = true;
+        break;
+      }
+    }
+
+    if (hasData) {
+      occupiedColumns.push(colNumber);
+    }
+  });
+
+  const columnsToShade = occupiedColumns.slice(0, 5);
+
+  columnsToShade.forEach(colNumber => {
+    const headerCell = worksheet.getRow(1).getCell(colNumber);
+
+    headerCell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF00AA00' }
+    };
+
+    headerCell.font = {
+      bold: true
+    };
+
+    headerCell.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      right: { style: 'thin' },
+      bottom: { style: 'thin' }
+    };
+
+    headerCell.alignment = { vertical: 'middle', horizontal: 'center' };
+  });
+};

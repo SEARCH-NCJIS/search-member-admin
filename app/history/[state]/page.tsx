@@ -10,12 +10,12 @@ type PageProps = {
 
 const StateHistoryPage = async ({ params }: PageProps) => {
   const stateSlug = params.state; // "new-york"
-  const displayState = prettyStateFromSlug(stateSlug); // "New York"
+  const displayState = prettyStateFromSlug(params.state); // "New York"
 
   const res = await fetch(
     `${
       process.env.NEXTAUTH_URL ?? 'http://localhost:3000'
-    }/api/appointmentHistory`,
+    }/api/appointment-history/${stateSlug}`,
     { cache: 'no-store' }
   );
 
@@ -25,15 +25,11 @@ const StateHistoryPage = async ({ params }: PageProps) => {
 
   // (Optional) you can filter here and pass only relevant rows:
   const filtered = appointmentHistory.filter(
-    appointment => slugify(appointment.memberState) === stateSlug
+    appointment => slugify(appointment.state) === stateSlug
   );
 
   return (
     <div className='max-w-7xl mx-auto p-6 space-y-6'>
-      <h1 className='font-bold text-2xl'>
-        State History for <span className='text-blue-500'>{displayState}</span>
-      </h1>
-
       <StateApptHistory state={displayState} appointmentHistory={filtered} />
     </div>
   );

@@ -21,16 +21,19 @@ const CardFooter = ({
   alternate: string | null;
   state: string;
 }) => {
-  // const stateSlug = slugify(state);
+  const stateSlug = slugify(state);
 
   return (
     <>
       <div className='flex items-center justify-between pt-4 mt-4 '>
         <div className='flex justify-between'>
           {' '}
-          {/* <Link href={`${stateSlug}/history`} className='text-blue-500 text-xs'>
+          <Link
+            href={`/history/${stateSlug}`}
+            className='text-blue-500 text-xs'
+          >
             Appointment History
-          </Link> */}
+          </Link>
         </div>
         <div className='flex justify-between'>
           {' '}

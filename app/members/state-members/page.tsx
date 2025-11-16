@@ -5,6 +5,7 @@ import { useMembersFilters } from '../MembersFilterContext';
 import { Member } from '@/app/types/member';
 import { groupByStateSorted } from '@/app/utils/groupByStateSorted';
 import MembersCard from '../MembersCard';
+import MembersCardSkeleton from '@/components/MembersCardSkeleton';
 
 export default function StateMembersPage() {
   const { query, boardOnly, statusFilter } = useMembersFilters();
@@ -56,22 +57,40 @@ export default function StateMembersPage() {
 
   const grouped = useMemo(() => groupByStateSorted(filtered), [filtered]);
 
+  if (loading) {
+    return (
+      <div className='space-y-6  '>
+        {[0, 1].map(section => (
+          <section key={section} className='space-y-1'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+              {Array.from({ length: 3 }).map((_, index) => (
+                <MembersCardSkeleton key={index} />
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className='space-y-6'>
       {grouped.length === 0 && (
         <div className='text-gray-500'>No Members match your filters.</div>
       )}
 
-      <div className='space-y-4'>
-        {/* Optional: show state headers inline */}
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-          {grouped.map(([state, members]) =>
-            members.map(member => (
-              <section key={member._id} className='space-y-1'>
-                <MembersCard member={member} />
-              </section>
-            ))
-          )}
+      <div className='flex flex-col h-full  p-4  '>
+        <div className='flex items-center justify-between gap-2 pb-3'>
+          {/* Optional: show state headers inline */}
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+            {grouped.map(([state, members]) =>
+              members.map(member => (
+                <section key={member._id} className='space-y-1'>
+                  <MembersCard member={member} />
+                </section>
+              ))
+            )}
+          </div>
         </div>
       </div>
     </div>

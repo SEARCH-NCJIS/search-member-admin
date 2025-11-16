@@ -5,6 +5,7 @@ import { useMembersFilters } from '../MembersFilterContext';
 import { Member } from '@/app/types/member';
 import { groupByStateSorted } from '@/app/utils/groupByStateSorted';
 import MembersCard from '../MembersCard';
+import MembersCardSkeleton from '@/components/MembersCardSkeleton';
 
 export default function StateMembersPage() {
   const { query, boardOnly, statusFilter } = useMembersFilters();
@@ -73,6 +74,22 @@ export default function StateMembersPage() {
     // 3) combined: all states, then At-Large, then Emeritus
     return [...normalStates, ...specials];
   }, [rawGroups]);
+
+  if (loading) {
+    return (
+      <div className='space-y-6 '>
+        {[0, 1].map(section => (
+          <section key={section} className='space-y-1'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+              {Array.from({ length: 3 }).map((_, index) => (
+                <MembersCardSkeleton key={index} />
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className='space-y-6'>

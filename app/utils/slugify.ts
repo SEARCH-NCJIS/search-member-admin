@@ -9,9 +9,7 @@ export function slugify(input: string): string {
 
 export function prettyStateFromSlug(slug: string) {
   return slug
-    .split('-') // "new-york" -> ["new", "york"]
-    .map(
-      part => part.charAt(0).toUpperCase() + part.slice(1) // "new" -> "New"
-    )
-    .join(' '); // ["New","York"] -> "New York"
+    .split('-')
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
 }

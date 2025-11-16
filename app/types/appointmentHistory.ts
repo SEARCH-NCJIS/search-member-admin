@@ -1,6 +1,6 @@
 export interface AppointmentHistory {
   id: string;
-  memberState: string;
+  state: string;
   nameTitle: string;
   lastName: string;
   firstName: string;
