@@ -50,7 +50,7 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { _id: string } }
+  { params }: { params: Promise<{ _id: string }> }
 ) {
   const client = await clientPromise;
   const db = client.db('test');
@@ -60,7 +60,9 @@ export async function PATCH(
 
     console.log('Member: ', body);
 
-    const found = await findMemberInAnyCollection(db, params._id);
+    const { _id: memberId } = await params;
+
+    const found = await findMemberInAnyCollection(db, memberId);
     if (!found) {
       return new NextResponse('Member not found', { status: 404 });
     }
