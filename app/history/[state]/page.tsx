@@ -5,12 +5,12 @@ import { slugify, prettyStateFromSlug } from '@/app/utils/slugify';
 import type { AppointmentHistory } from '@/app/types/appointmentHistory';
 
 type PageProps = {
-  params: { state: string };
+  params: Promise<{ state: string }>;
 };
 
 const StateHistoryPage = async ({ params }: PageProps) => {
-  const stateSlug = params.state; // "new-york"
-  const displayState = prettyStateFromSlug(params.state); // "New York"
+  const stateSlug = (await params).state; // "new-york"
+  const displayState = prettyStateFromSlug(stateSlug); // "New York"
 
   const res = await fetch(
     `${
