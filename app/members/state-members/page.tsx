@@ -79,7 +79,7 @@ export default function StateMembersPage() {
         <div className='text-gray-500'>No Members match your filters.</div>
       )}
 
-      <div className='flex flex-col h-full  p-4  '>
+      <div className='flex flex-col h-full   '>
         <div className='flex items-center justify-between gap-2 pb-3'>
           {/* Optional: show state headers inline */}
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
