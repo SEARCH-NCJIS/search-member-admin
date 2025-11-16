@@ -17,9 +17,12 @@ const MemberDetailPage = async ({
   const data = await response.json();
   console.log(data);
 
+  // TODO: Fetch invoicing data or extract from data
+  const invoicing = data.invoicing || {};
+
   return (
     <div className='pt-4'>
-      <MemberDetailCard member={data} invoicing={undefined} />
+      <MemberDetailCard member={data} invoicing={invoicing} />
     </div>
   );
 };
