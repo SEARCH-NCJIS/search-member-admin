@@ -3,10 +3,10 @@ import { NextResponse } from 'next/server';
 
 export async function GET(
   _req: Request,
-  { params }: { params: { stateSlug: string } }
+  { params }: { params: Promise<{ state: string }> }
 ) {
-  const slug = params.stateSlug;
-  const rawState = slug.replace(/-/, ' ');
+  const { state } = await params;
+  const rawState = state.replace(/-/g, ' ');
   const normalized = rawState.trim().replace(/\s+/g, ' ');
 
   const client = await clientPromise;
