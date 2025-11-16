@@ -9,10 +9,10 @@ export const runtime = 'nodejs';
 
 export async function GET(
   _: NextRequest,
-  { params }: { params: { _id: string } }
+  { params }: { params: Promise<{ _id: string }> }
 ) {
   try {
-    const { _id } = params;
+    const { _id } = await params;
 
     const dbconnect = async () => {
       try {
