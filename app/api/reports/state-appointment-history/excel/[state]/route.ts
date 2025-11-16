@@ -1,7 +1,12 @@
 import clientPromise from '@/app/lib/mongodb';
 import { NextResponse } from 'next/server';
-
-//TODO: FIX. RE{PRTOMG OSSIE}
+import ExcelJS from 'exceljs';
+import {
+  sheetColumns,
+  sheetRows,
+  addStyling,
+  freezePanes
+} from '@/app/utils/excelHelper';
 
 export async function GET(
   _req: Request,
@@ -14,7 +19,7 @@ export async function GET(
   const client = await clientPromise;
   const db = client.db(process.env.MONGO_DB);
 
-  const appointmentHistory = await db
+  const data = await db
     .collection('appointmentHistory')
     .find({
       state: {
@@ -28,5 +33,37 @@ export async function GET(
     .sort({ appointmentDate: -1 })
     .toArray();
 
-  return NextResponse.json({ appointmentHistory });
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet('Emeritus Members');
+
+  sheet.columns = sheetColumns;
+  sheet.addRows(
+    data.map(doc =>
+      sheetRows(
+        doc.member || doc,
+        doc.appointmentInfo || {},
+        doc.invoicing || {},
+        doc.adminInfo || {}
+      )
+    )
+  );
+
+  //   Add Styling
+
+  addStyling(sheet);
+
+  // Freeze Panes
+  freezePanes(sheet);
+
+  const buffer = await workbook.xlsx.writeBuffer();
+
+  return new NextResponse(buffer, {
+    status: 200,
+    headers: {
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition': `attachment; filename="appointment_history_${state}.xlsx"`,
+      'Cache-Control': 'no-store'
+    }
+  });
 }
