@@ -11,7 +11,7 @@ export async function GET(
   //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const slug = await params.stateSlug;
-  const rawState = slug.replace(/-/, ' ');
+  const rawState = slug.replace(/-/g, ' ');
   const normalized = rawState.trim().replace(/\s+/g, ' ');
 
   const client = await clientPromise;
